@@ -1,0 +1,9 @@
+[submodule "secp256k1"]
+	path = secp256k1
+	url = https://github.com/bitcoin-core/secp256k1.git
+[submodule "cryptopp"]
+	path = cryptopp
+	url = https://github.com/weidai11/cryptopp.git
+[submodule "blockchain-utils"]
+	path = blockchain-utils
+	url = https://github.com/lucgerrits/blockchain-utils.git
