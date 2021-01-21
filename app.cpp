@@ -20,6 +20,7 @@
 
 //my utils lib
 #include "blockchain-utils/utils.hpp"
+BLOCKCHAIN_UTILS myBCutils;
 
 #define PRIVATE_KEY "0152fdf6e81e0a694cf8f361e14d32d8b25e605c669dc06940c500c546ee8a3f"
 #define PUBLIC_KEY "0265e1a0353a5de3ad229f0c96fe4851949c856d5ad57717d4615c981ddea1f841"
@@ -103,18 +104,17 @@ int parseArgs(int argc, char *argv[], std::string &command, std::string &message
 void init(SECP256K1_API::secp256k1_context *&ctx, KeyPair &myKeyPair)
 {
     std::cout << "***INIT***" << std::endl;
-    BLOCKCHAIN_UTILS myutils;
     ctx = SECP256K1_API::secp256k1_context_create(SECP256K1_CONTEXT_SIGN);
 
     std::cout << "***Loading keys***" << std::endl;
-    myutils.HexStrToUchar(myKeyPair.pubKey_uchar, PUBLIC_KEY, PUBLIC_KEY_SERILIZED_SIZE);
+    myBCutils.HexStrToUchar(myKeyPair.pubKey_uchar, PUBLIC_KEY, PUBLIC_KEY_SERILIZED_SIZE);
     CHECK(SECP256K1_API::secp256k1_ec_pubkey_parse(ctx, &myKeyPair.pubkey, myKeyPair.pubKey_uchar, PUBLIC_KEY_SERILIZED_SIZE) == 1);
 
     CHECK(SECP256K1_API::secp256k1_ec_pubkey_serialize(ctx, myKeyPair.pubKey_ucompressed_uchar, &myKeyPair.pubKey_ucompressed_len, &myKeyPair.pubkey, SECP256K1_EC_UNCOMPRESSED) == 1);
 
-    myKeyPair.pubKey_ucompressed_str = myutils.UcharToHexStr(myKeyPair.pubKey_ucompressed_uchar, myKeyPair.pubKey_ucompressed_len);
+    myKeyPair.pubKey_ucompressed_str = myBCutils.UcharToHexStr(myKeyPair.pubKey_ucompressed_uchar, myKeyPair.pubKey_ucompressed_len);
 
-    myutils.HexStrToUchar(myKeyPair.privKey_uchar, PRIVATE_KEY, PRIVATE_KEY_SIZE);
+    myBCutils.HexStrToUchar(myKeyPair.privKey_uchar, PRIVATE_KEY, PRIVATE_KEY_SIZE);
     CHECK(SECP256K1_API::secp256k1_ec_seckey_verify(ctx, myKeyPair.privKey_uchar) == 1);
 
     std::cout << std::left;
@@ -128,19 +128,18 @@ void sign(SECP256K1_API::secp256k1_context *&ctx, KeyPair &myKeyPair, std::strin
     std::cout << "***SIGN***" << std::endl;
     std::cout << std::setw(20) << "Message: " << message << std::endl;
 
-    BLOCKCHAIN_UTILS myutils;
     SECP256K1_API::secp256k1_ecdsa_signature signature;
     unsigned char signature_serilized[SIGNATURE_SERILIZED_SIZE];
     unsigned char message_hash_uchar[HASH_SHA256_SIZE];
-    std::string message_hash_str = myutils.sha256(message);
-    myutils.HexStrToUchar(message_hash_uchar, message_hash_str.c_str(), HASH_SHA256_SIZE);
+    std::string message_hash_str = myBCutils.sha256(message);
+    myBCutils.HexStrToUchar(message_hash_uchar, message_hash_str.c_str(), HASH_SHA256_SIZE);
     std::cout << std::setw(20) << "Message (SHA256): " << message_hash_str << std::endl;
 
     CHECK(SECP256K1_API::secp256k1_ecdsa_sign(ctx, &signature, message_hash_uchar, myKeyPair.privKey_uchar, NULL, NULL) == 1); //make signature
     CHECK(SECP256K1_API::secp256k1_ecdsa_signature_serialize_compact(ctx, signature_serilized, &signature) == 1);
 
-    std::string signature_str = myutils.UcharToHexStr(signature.data, SIGNATURE_SERILIZED_SIZE);
-    std::string signature_compressed_str = myutils.UcharToHexStr(signature_serilized, SIGNATURE_SERILIZED_SIZE);
+    std::string signature_str = myBCutils.UcharToHexStr(signature.data, SIGNATURE_SERILIZED_SIZE);
+    std::string signature_compressed_str = myBCutils.UcharToHexStr(signature_serilized, SIGNATURE_SERILIZED_SIZE);
     std::cout << std::setw(20) << "Signature: " << signature_str << std::endl;
     std::cout << std::setw(20) << "Signature (compressed): " << signature_compressed_str << std::endl;
 }
