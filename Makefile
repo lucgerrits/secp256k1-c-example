@@ -13,7 +13,7 @@ app_static_lib = cryptopp/libcryptopp.a
 app_static_lib += secp256k1/.libs/libsecp256k1.a
 
 #some flags
-flag_global = -O2 -std=c++11  -pg  #eosio is on standart c++17  -pg 
+flag_global = -O2 -std=c++11 # -pg  #eosio is on standart c++17  -pg 
 flag_main = -Wall 
 
 all: app
